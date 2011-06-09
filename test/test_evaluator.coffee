@@ -85,6 +85,23 @@ module.exports = testCase
     test.equal -max_value, @e.evaluate()
     test.done()
 
+  test_is_game_over_b: (test) ->
+    @game.move(square_sides.top, 4)
+    @game.move(square_sides.top, 3)
+    @game.move(square_sides.top, 4)
+    @game.move(square_sides.top, 3)
+    @game.move(square_sides.left, 3)
+    @game.move(square_sides.right, 3)
+    @game.move(square_sides.right, 4)
+    @game.move(square_sides.right, 2)
+    @game.move(square_sides.right, 3)
+    @game.move(square_sides.bottom, 3)
+    @game.move(square_sides.right, 2)
+    test.equal false, @e.is_game_over()
+    test.equal true, @e.evaluate() > 0
+    test.done()
+
+
   # game_over_by_shifting_opponents_piece_into_a_line: (test) ->
   #   @game = new Game(3)
   #   @e = @game.evaluator

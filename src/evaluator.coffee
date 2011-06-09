@@ -13,6 +13,9 @@ module.exports = class Evaluator
     while i < @game.n
      @piece_balance_per_row[i] = 0
      @piece_balance_per_column[i] = 0
+     i += 1
+    i = 0
+    while i <= @game.n
      @balance2value[i] = Math.pow(2, i) - 1
      i += 1
 
@@ -30,14 +33,17 @@ module.exports = class Evaluator
       @winning_player = @game.current_player
       return (@game_over = true)
     i = 0
+    black_lines = 0
+    white_lines = 0
     while i < @game.n
       if @piece_balance_per_row[i] is @game.n or @piece_balance_per_column[i] is @game.n
-        @winning_player = square.black
-        return (@game_over = true)
+        black_lines += 1
       if @piece_balance_per_row[i] is -@game.n or @piece_balance_per_column[i] is -@game.n
-        @winning_player = square.white
-        return (@game_over = true)
+        white_lines += 1
       i += 1
+    if black_lines != white_lines
+      @winning_player = (if black_lines > white_lines then square.black else square.white)
+      return @game_over = true
     @winning_player = square.empty
     false
 
