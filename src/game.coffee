@@ -126,7 +126,7 @@ module.exports = class Game
         if chunk.match(/help|\?/)
           console.log "Moves have a `direction ndx` format, where `direction` must be top/bottom/right/left and ndx is between 0 and #{@n-1}. You will loose if your move leads to a board configuration that was already encountered. There are no cycles or draws."
         else
-          if chunk.match(/quit|exit|/)
+          if chunk.match(/quit|exit/)
             process.exit(0)
           else
             console.log "I'm baffled."
@@ -194,7 +194,7 @@ module.exports = class Game
         when square.black
           'X'
         when square.empty
-          '#'
+          '.'
         else
           'O'
     str = []
