@@ -123,7 +123,13 @@ module.exports = class Game
         else
           console.log "That is not even on the board."
       else
-        console.log "I'm baffled."
+        if chunk.match(/help|\?/)
+          console.log "Moves have a `direction ndx` format, where `direction` must be top/bottom/right/left and ndx is between 0 and #{@n-1}. You will loose if your move leads to a board configuration that was already encountered. There are no cycles or draws."
+        else
+          if chunk.match(/quit|exit|/)
+            process.exit(0)
+          else
+            console.log "I'm baffled."
       this.readline().prompt()
     prompt = 'your move > '
     this.readline().setPrompt(prompt, prompt.length)
