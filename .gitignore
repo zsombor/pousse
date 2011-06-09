@@ -1,0 +1,7 @@
+/node_modules/
+TAGS
+*.patch
+notes.txt
+*~
+*.\#*
+test/test_*.js
