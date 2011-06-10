@@ -2,7 +2,7 @@
 {max_value} = require 'square'
 
 module.exports = class TranspositionTableEntry
-  constructor: (@player, @depth, @position_value, @position_value_type, @best_move, @zobrist) ->
+  constructor: (@player, @depth, @position_value, @position_value_type, @best_move, @zobrist, @search_id) ->
     return
 
   upper_bound: () ->

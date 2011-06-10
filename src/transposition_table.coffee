@@ -5,9 +5,10 @@ module.exports = class TranspositionTable
   constructor: (@game, @log_size = 15) ->
     @size = Math.pow(2, @log_size)
     @table = new Array(@size)
+    @current_search_id = 0
     i = 0
     while i < @size
-      @table[i] = new TranspositionTableEntry(square.empty, 0, 0, 0, 0, 0)
+      @table[i] = new TranspositionTableEntry(square.empty, 0, 0, 0, 0, 0, 0)
       i += 1
     @xor_table_a = new Array(@game.nn * 3)
     @xor_table_b = new Array(@game.nn * 3)
@@ -18,6 +19,9 @@ module.exports = class TranspositionTable
       @xor_table_b[i] = Math.floor(Math.random() * max_positive_integer)
       i += 1
     this.reset_zobrist_stamp_for_game()
+
+  bump_search_id: () ->
+    @current_search_id += 1
 
   hash:() ->
     @game.zobrist_a >> (32-@log_size)
@@ -31,7 +35,7 @@ module.exports = class TranspositionTable
 
   store: (values) ->
     ndx = this.hash()
-    if (values.depth > @table[ndx].depth) # or (@game.table[ndx].zobrist == @table[ndx].zobrist_b and @game.current_player == @table[ndx].player)
+    if values.depth >= @table[ndx].depth or @table[ndx].search_id != @current_search_id #(@game.table[ndx].zobrist == @table[ndx].zobrist_b and @game.current_player == @table[ndx].player)
       @table[ndx].zobrist = @game.zobrist_b
       @table[ndx].player = @game.current_player
       @table[ndx].depth = values.depth

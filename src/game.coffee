@@ -31,6 +31,7 @@ module.exports = class Game
     @best_move = null
 
   alpha_beta: (alpha, beta, depth) ->
+    @nr_processed_nodes += 1
     # this.log_alpha_beta(alpha, beta, depth)
     if @evaluator.is_game_over() or depth == 0
       value = @evaluator.evaluate()
@@ -38,8 +39,10 @@ module.exports = class Game
     from_transposition_table = @transposition_table.retrieve()
     if from_transposition_table isnt null and from_transposition_table.depth == depth
       if from_transposition_table.lower_bound() >= beta
+        @transposition_table_hits += 1
         return from_transposition_table.lower_bound()
       if from_transposition_table.upper_bound() <= alpha
+        @transposition_table_hits += 1
         return from_transposition_table.upper_bound()
     a = alpha
     b = beta
@@ -75,14 +78,19 @@ module.exports = class Game
                    positional_value.upper_bound
     @transposition_table.store(depth: depth, position_value: value, position_value_type: value_type, best_move: best_move)
     if depth == @current_iteration_depth
-      console.log "'#{best_move.side} #{best_move.ndx}' seems most promissing at depth #{depth}"
+      console.log "'#{best_move.side} #{best_move.ndx}' seems most promissing at depth #{depth} after processed #{@nr_processed_nodes} nodes with #{@transposition_table_hits} tt hits"
       @current_iteration_best_move = best_move
     null
 
   iterative_deepening: (final_depth) ->
+    @transposition_table.bump_search_id()
     @current_iteration_depth = 0
     while @current_iteration_depth < final_depth
-      this.alpha_beta(-max_value, max_value, @current_iteration_depth)
+      @nr_processed_nodes = 0
+      @transposition_table_hits = 0
+      value = this.alpha_beta(-max_value, max_value, @current_iteration_depth)
+      console.log "game value is #{value}"
+      break if Math.abs(value)is max_value
       @current_iteration_depth += 1
     @current_iteration_best_move
 
@@ -110,7 +118,7 @@ module.exports = class Game
             console.log "Game over!"
             process.exit(0)
           console.log "Thinking ..."
-          this.iterative_deepening(7)
+          this.iterative_deepening(9)
           this.move(@current_iteration_best_move.side, @current_iteration_best_move.ndx)
           console.log this.print_board()
           console.log "\n"
