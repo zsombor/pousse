@@ -98,7 +98,6 @@ module.exports = testCase
     @game.move(square_sides.bottom, 3)
     @game.move(square_sides.right, 2)
     test.equal false, @e.is_game_over()
-    test.equal true, @e.evaluate() > 0
     test.done()
 
 
@@ -119,9 +118,9 @@ module.exports = testCase
 
   evaluate: (test) ->
     @game.move(square_sides.top, 0)
-    test.equal ((2 * max_value)/Math.pow(2, @game.n+2)), @e.evaluate()
+    test.equal true, @e.evaluate() > 0
     @game.move(square_sides.top, 0)
-    test.equal 0, @e.evaluate()
+    test.equal true, @e.evaluate() > 0
     test.done()
 
   evaluate_not_nan: (test) ->
@@ -137,3 +136,8 @@ module.exports = testCase
     test.equal true, @e.is_game_over()
     test.equal max_value, @e.evaluate()
     test.done()
+
+  precomputed_manhattan_distance_matrix: (test) ->
+    test.equal("0,1,2,1,0,1,2,3,2,1,2,3,4,3,2,1,2,3,2,1,0,1,2,1,0",  @e.manhattan_distances.join(','))
+    test.done()
+

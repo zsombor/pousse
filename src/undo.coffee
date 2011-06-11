@@ -19,7 +19,8 @@ module.exports = class Undo
     @backup[@top_ndx] = @game.zobrist_a
     @backup[@top_ndx + 1] = @game.zobrist_b
     @backup[@top_ndx + 2] = @game.current_player
-    @top_ndx += 3
+    @backup[@top_ndx + 3] = @evaluator.manhattan_balance
+    @top_ndx += 4
     i = 0
     while i < @game.nn
       @backup[@top_ndx + i] = @game.table[i]
@@ -34,10 +35,11 @@ module.exports = class Undo
     while i < @game.nn
       @game.table[i] = @backup[@top_ndx + i]
       i += 1
-    @top_ndx -= 3
+    @top_ndx -= 4
     @game.zobrist_a = @backup[@top_ndx]
     @game.zobrist_b = @backup[@top_ndx + 1]
     @game.current_player = @backup[@top_ndx + 2]
+    @evaluator.manhattan_balance = @backup[@top_ndx + 3]
     i = 0
     @top_ndx -= @game.n
     while i < @game.n

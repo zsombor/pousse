@@ -64,6 +64,15 @@ module.exports = testCase
     test.equal false, @game.evaluator.game_over
     test.done()
 
+  manhattan_balance_is_restored: (test) ->
+    @game.evaluator.manhattan_balance = 55
+    @undo.mark()
+    @game.evaluator.manhattan_balance = 77
+    @undo.restore_last_mark()
+    test.equal 55, @game.evaluator.manhattan_balance
+    test.done()
+
+
   game_table_is_restored: (test) ->
     board = @game.print_board()
     @undo.mark()
