@@ -34,8 +34,8 @@ module.exports = testCase
     test.done()
 
   xor_table_size: (test) ->
-    test.equal 27, @tt.xor_table_a.length
-    test.equal 27, @tt.xor_table_b.length
+    test.equal 30, @tt.xor_table_a.length
+    test.equal 30, @tt.xor_table_b.length
     test.done()
 
   xor_table_all_different_values: (test) ->

@@ -10,11 +10,11 @@ module.exports = class TranspositionTable
     while i < @size
       @table[i] = new TranspositionTableEntry(square.empty, 0, 0, 0, 0, 0, 0)
       i += 1
-    @xor_table_a = new Array(@game.nn * 3)
-    @xor_table_b = new Array(@game.nn * 3)
+    @xor_table_a = new Array(@game.nn * 3 + 3)
+    @xor_table_b = new Array(@game.nn * 3 + 2)
     i = 0
     max_positive_integer = 256*256*256*64
-    while i < @game.nn * 3
+    while i < @game.nn * 3 + 3
       @xor_table_a[i] = Math.floor(Math.random() * max_positive_integer)
       @xor_table_b[i] = Math.floor(Math.random() * max_positive_integer)
       i += 1
@@ -35,7 +35,7 @@ module.exports = class TranspositionTable
 
   store: (values) ->
     ndx = this.hash()
-    if values.depth >= @table[ndx].depth or @table[ndx].search_id != @current_search_id #(@game.table[ndx].zobrist == @table[ndx].zobrist_b and @game.current_player == @table[ndx].player)
+    if values.depth >= @table[ndx].depth or @table[ndx].search_id != @current_search_id
       @table[ndx].zobrist = @game.zobrist_b
       @table[ndx].player = @game.current_player
       @table[ndx].depth = values.depth
@@ -47,9 +47,14 @@ module.exports = class TranspositionTable
     @game.zobrist_a ^= @xor_table_a[pos + (@game.table[pos] + 1)] ^ @xor_table_a[pos + (changed_to + 1)]
     @game.zobrist_b ^= @xor_table_b[pos + (@game.table[pos] + 1)] ^ @xor_table_b[pos + (changed_to + 1)]
 
+  update_zobrist_stamp_for_current_player_change: () ->
+    @game.zobrist_a ^= @xor_table_a[@game.n + 2 + @game.current_player] ^ @xor_table_a[@game.n + 2 - @game.current_player]
+    @game.zobrist_b ^= @xor_table_b[@game.n + 2 + @game.current_player] ^ @xor_table_b[@game.n + 2 - @game.current_player]
+
+
   reset_zobrist_stamp_for_game: () ->
-    @game.zobrist_a = 0
-    @game.zobrist_b = 0
+    @game.zobrist_a = @xor_table_a[@game.n + 2 + @game.current_player]
+    @game.zobrist_b = @xor_table_b[@game.n + 2 + @game.current_player]
     i = 0
     while i < @game.nn
       @game.zobrist_a ^=  @xor_table_a[ i + (@game.table[i] + 1) ]

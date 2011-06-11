@@ -189,6 +189,7 @@ module.exports = class Game
           break if carry == square.empty
           i -= 1
     @current_player = -@current_player
+    @transposition_table.update_zobrist_stamp_for_current_player_change()
     @history.push_current_board()
 
   log_alpha_beta: (alpha, beta, depth) ->
