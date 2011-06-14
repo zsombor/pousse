@@ -8,15 +8,17 @@ module.exports = class TranspositionTable
     @current_search_id = 0
     i = 0
     while i < @size
-      @table[i] = new TranspositionTableEntry(square.empty, 0, 0, 0, 0, 0, 0)
+      @table[i] = new TranspositionTableEntry(square.empty, 0, 0, 0, 0, 0, 0, 0)
       i += 1
-    @xor_table_a = new Array(@game.nn * 3 + 3)
-    @xor_table_b = new Array(@game.nn * 3 + 3)
+    @xor_table_a = new Array(@game.nn * 3)
+    @xor_table_b = new Array(@game.nn * 3)
+    @xor_table_c = new Array(@game.nn * 3)
     i = 0
     max_positive_integer = 256*256*256*64
-    while i < @game.nn * 3 + 3
+    while i < @game.nn * 3
       @xor_table_a[i] = Math.floor(Math.random() * max_positive_integer)
       @xor_table_b[i] = Math.floor(Math.random() * max_positive_integer)
+      @xor_table_c[i] = Math.floor(Math.random() * max_positive_integer)
       i += 1
     this.reset_zobrist_stamp_for_game()
 
@@ -28,15 +30,17 @@ module.exports = class TranspositionTable
 
   retrieve: () ->
     ndx = this.hash()
-    if @game.table[ndx].zobrist != @table[ndx].zobrist_b or @game.current_player != @table[ndx].player
+    hit = @table[ndx]
+    if @game.zobrist_b != hit.zobrist_b or @game.zobrist_c != hit.zobrist_c or @game.current_player != hit.player
       null
     else
-      @table[ndx]
+      hit
 
   store: (values) ->
     ndx = this.hash()
     if values.depth >= @table[ndx].depth or @table[ndx].search_id != @current_search_id
-      @table[ndx].zobrist = @game.zobrist_b
+      @table[ndx].zobrist_b = @game.zobrist_b
+      @table[ndx].zobrist_c = @game.zobrist_c
       @table[ndx].player = @game.current_player
       @table[ndx].depth = values.depth
       @table[ndx].position_value = values.position_value
@@ -44,19 +48,22 @@ module.exports = class TranspositionTable
       @table[ndx].best_move = values.best_move
 
   update_zobrist_stamp_for_square_change: (pos, changed_to) ->
-    @game.zobrist_a ^= @xor_table_a[pos + (@game.table[pos] + 1)] ^ @xor_table_a[pos + (changed_to + 1)]
-    @game.zobrist_b ^= @xor_table_b[pos + (@game.table[pos] + 1)] ^ @xor_table_b[pos + (changed_to + 1)]
-
-  update_zobrist_stamp_for_current_player_change: () ->
-    # @game.zobrist_a ^= @xor_table_a[@game.nn*3 + 2 + @game.current_player] ^ @xor_table_a[@game.nn*3 + 2 - @game.current_player]
-    # @game.zobrist_b ^= @xor_table_b[@game.nn*3 + 2 + @game.current_player] ^ @xor_table_b[@game.nn*3 + 2 - @game.current_player]
+    from = pos + (@game.table[pos] + 1)
+    to = pos + (changed_to + 1)
+    @game.zobrist_a ^= @xor_table_a[from] ^ @xor_table_a[to]
+    @game.zobrist_b ^= @xor_table_b[from] ^ @xor_table_b[to]
+    @game.zobrist_c ^= @xor_table_c[from] ^ @xor_table_c[to]
+    true
 
 
   reset_zobrist_stamp_for_game: () ->
-    @game.zobrist_a = 0#@xor_table_a[@game.nn*3 + 2 + @game.current_player]
-    @game.zobrist_b = 0#@xor_table_b[@game.nn*3 + 2 + @game.current_player]
+    @game.zobrist_a = 0
+    @game.zobrist_b = 0
+    @game.zobrist_c = 0
     i = 0
     while i < @game.nn
-      @game.zobrist_a ^=  @xor_table_a[ i + (@game.table[i] + 1) ]
-      @game.zobrist_b ^=  @xor_table_b[ i + (@game.table[i] + 1) ]
+      ndx = i + (@game.table[i] + 1)
+      @game.zobrist_a ^=  @xor_table_a[ ndx ]
+      @game.zobrist_b ^=  @xor_table_b[ ndx ]
+      @game.zobrist_c ^=  @xor_table_c[ ndx ]
       i += 1

@@ -7,7 +7,7 @@ util = require 'util'
 http = require 'http'
 
 module.exports = class Server
-  constructor: (@n, @games_in_a_tournament = 1000) ->
+  constructor: (@n, @games_in_a_tournament = 400) ->
     @i_am = square.white
     @game = new Game(@n)
     @won_as_black = 0
@@ -21,7 +21,7 @@ module.exports = class Server
     @game = new Game(@n)
     move = null
     if @i_am is @game.current_player
-      move = {side: 'top', ndx: Math.floor(Math.random() * @n)}
+      move = {side: 'top', ndx: Math.floor(Math.random()* @n) }
       console.log "making the first move: #{@parser.move_to_string(move)}"
       @game.move(move.side, move.ndx)
       console.log @game.print_board()
@@ -55,7 +55,7 @@ module.exports = class Server
         if this.is_game_over()
           return this.on_game_over(response)
         console.log "Thinking ..."
-        @game.iterative_deepening(7)
+        @game.iterative_deepening(5)
         str = @parser.move_to_string(@game.current_iteration_best_move)
         console.log "selected move '#{str}'"
         @game.move(@game.current_iteration_best_move.side, @game.current_iteration_best_move.ndx)
@@ -105,6 +105,6 @@ module.exports = class Server
 
   log_tournament_results: () ->
      console.log " * as black I've won #{@won_as_black} times and lost #{@lost_as_black} times!"
-     console.log " * tas white I've won #{@won_as_white} times and lost #{@lost_as_white} times!"
+     console.log " * as white I've won #{@won_as_white} times and lost #{@lost_as_white} times!"
 
 

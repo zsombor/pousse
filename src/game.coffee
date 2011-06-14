@@ -24,6 +24,7 @@ module.exports = class Game
       i += 1
     @zobrist_a = 0
     @zobrist_b = 0
+    @zobrist_c = 0
     @history = new GameHistory(this)
     @moves = new MoveList(this)
     @evaluator = new Evaluator(this)
@@ -79,7 +80,7 @@ module.exports = class Game
                    positional_value.upper_bound
     @transposition_table.store(depth: depth, position_value: value, position_value_type: value_type, best_move: best_move)
     if depth == @current_iteration_depth
-      #console.log "'#{best_move.side} #{best_move.ndx}' seems most promissing at depth #{depth} after processed #{@nr_processed_nodes} nodes with #{@transposition_table_hits} tt hits"
+      console.log "'#{best_move.side} #{best_move.ndx}' seems most promissing at depth #{depth} after processed #{@nr_processed_nodes} nodes with #{@transposition_table_hits} tt hits"
       @current_iteration_best_move = best_move
     null
 
@@ -90,7 +91,7 @@ module.exports = class Game
       @nr_processed_nodes = 0
       @transposition_table_hits = 0
       value = this.alpha_beta(-max_value, max_value, @current_iteration_depth)
-      #console.log "game value is #{value}"
+      console.log "game value is #{value}"
       break if Math.abs(value)is max_value
       @current_iteration_depth += 1
     @current_iteration_best_move
@@ -188,7 +189,6 @@ module.exports = class Game
           break if carry == square.empty
           i -= 1
     @current_player = -@current_player
-    @transposition_table.update_zobrist_stamp_for_current_player_change()
     @history.push_current_board()
 
   log_alpha_beta: (alpha, beta, depth) ->

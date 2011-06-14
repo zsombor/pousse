@@ -7,11 +7,12 @@ TranspositionTableEntry = require 'transposition_table_entry'
 
 module.exports = testCase
   setUp: (done) ->
-    @record = new TranspositionTableEntry(square.black, 13, 777, positional_value.exact, 13, 1234567)
+    @record = new TranspositionTableEntry(square.black, 13, 777, positional_value.exact, 13, 1234567, 98765)
     done()
 
   zobrist: (test) ->
-    test.equal 1234567, @record.zobrist
+    test.equal 1234567, @record.zobrist_b
+    test.equal 98765, @record.zobrist_c
     test.done()
 
   lower_bound_when_exact_value_is_stored: (test) ->

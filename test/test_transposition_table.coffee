@@ -18,7 +18,8 @@ module.exports = testCase
       test.equal 0, entry.position_value
       test.equal 0, entry.position_value_type
       test.equal 0, entry.best_move
-      test.equal 0, entry.zobrist
+      test.equal 0, entry.zobrist_b
+      test.equal 0, entry.zobrist_c
     test.done()
 
   the_hash_fits_within_the_table: (test) ->
@@ -34,8 +35,8 @@ module.exports = testCase
     test.done()
 
   xor_table_size: (test) ->
-    test.equal 30, @tt.xor_table_a.length
-    test.equal 30, @tt.xor_table_b.length
+    test.equal 27, @tt.xor_table_a.length
+    test.equal 27, @tt.xor_table_b.length
     test.done()
 
   xor_table_all_different_values: (test) ->
@@ -47,22 +48,29 @@ module.exports = testCase
 
   retrieve_returns_null_when_zobrist_hash_does_not_match: (test) ->
     test.equal null, @tt.retrieve()
-    @tt.table[@tt.hash()].zobrist = 3333
     test.notEqual 3333, @game.zobrist_b
+    @tt.table[@tt.hash()].zobrist_b = 3333
+    @game.zobrist_b = 3333
+    test.notEqual 7777, @game.zobrist_c
+    @tt.table[@tt.hash()].zobrist_c = 7777
     test.equal null, @tt.retrieve()
     test.done()
 
   retrieve_returns_null_when_zobrist_hash_matches_but_players_do_not: (test) ->
-    @tt.table[@tt.hash()].zobrist = 3333
-    @game.zobrist_b = 333
+    @tt.table[@tt.hash()].zobrist_b = 3333
+    @game.zobrist_b = 3333
+    @tt.table[@tt.hash()].zobrist_c = 4444
+    @game.zobrist_c = 444
     @tt.table[@tt.hash()].player = square.black
     @game.current_player = square.white
     test.equal null, @tt.retrieve()
     test.done()
 
   retrieve_match: (test) ->
-    @tt.table[@tt.hash()].zobrist = 3333
-    @game.zobrist_b = 333
+    @tt.table[@tt.hash()].zobrist_b = 3333
+    @game.zobrist_b = 3333
+    @tt.table[@tt.hash()].zobrist_c = 1111
+    @game.zobrist_c = 1111
     @tt.table[@tt.hash()].player = square.black
     @game.current_player = square.black
     test.notEqual null, @tt.retrieve()
@@ -105,17 +113,22 @@ module.exports = testCase
     @game.move(square_sides.right, 0)
     a = @game.zobrist_a
     b = @game.zobrist_b
+    c = @game.zobrist_c
     @game.move(square_sides.right, 0)
     test.notEqual a, @game.zobrist_a
     test.notEqual b, @game.zobrist_b
+    test.notEqual c, @game.zobrist_c
     @game.move(square_sides.right, 0)
     test.notEqual a, @game.zobrist_a
     test.notEqual b, @game.zobrist_b
+    test.notEqual c, @game.zobrist_c
     a = @game.zobrist_a
     b = @game.zobrist_b
+    c = @game.zobrist_c
     @tt.reset_zobrist_stamp_for_game()
     test.equal a, @game.zobrist_a
     test.equal b, @game.zobrist_b
+    test.equal c, @game.zobrist_c
     test.done()
 
 

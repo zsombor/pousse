@@ -2,7 +2,7 @@
 
 module.exports = class Undo
   constructor: (@evaluator, @game) ->
-    @backup = new Array((@game.n * 2 + 2 + 1 + @game.nn) * @game.maximum_search_depth)
+    @backup = new Array((@game.n * 3 + 2 + 1 + @game.nn) * @game.maximum_search_depth)
     @top_ndx = 0
 
   mark: () ->
@@ -16,11 +16,11 @@ module.exports = class Undo
       @backup[@top_ndx + i] = @evaluator.piece_balance_per_column[i]
       i += 1
     @top_ndx += @game.n
-    @backup[@top_ndx] = @game.zobrist_a
-    @backup[@top_ndx + 1] = @game.zobrist_b
-    @backup[@top_ndx + 2] = @game.current_player
-    @backup[@top_ndx + 3] = @evaluator.manhattan_balance
-    @top_ndx += 4
+    @backup[@top_ndx++] = @game.zobrist_a
+    @backup[@top_ndx++] = @game.zobrist_b
+    @backup[@top_ndx++] = @game.zobrist_c
+    @backup[@top_ndx++] = @game.current_player
+    @backup[@top_ndx++] = @evaluator.manhattan_balance
     i = 0
     while i < @game.nn
       @backup[@top_ndx + i] = @game.table[i]
@@ -35,11 +35,11 @@ module.exports = class Undo
     while i < @game.nn
       @game.table[i] = @backup[@top_ndx + i]
       i += 1
-    @top_ndx -= 4
-    @game.zobrist_a = @backup[@top_ndx]
-    @game.zobrist_b = @backup[@top_ndx + 1]
-    @game.current_player = @backup[@top_ndx + 2]
-    @evaluator.manhattan_balance = @backup[@top_ndx + 3]
+    @evaluator.manhattan_balance = @backup[--@top_ndx]
+    @game.current_player = @backup[--@top_ndx]
+    @game.zobrist_c = @backup[--@top_ndx]
+    @game.zobrist_b = @backup[--@top_ndx]
+    @game.zobrist_a = @backup[--@top_ndx]
     i = 0
     @top_ndx -= @game.n
     while i < @game.n

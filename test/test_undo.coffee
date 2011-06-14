@@ -40,12 +40,15 @@ module.exports = testCase
   zobrist_stamps_are_restored: (test) ->
     @game.zobrist_a = 354523
     @game.zobrist_b = 897897
+    @game.zobrist_c = 453453
     @undo.mark()
     @game.zobrist_a = 'something else'
-    @game.zobrist_b = 'that should not persist'
+    @game.zobrist_b = 'that should'
+    @game.zobrist_c = 'not persist'
     @undo.restore_last_mark()
-    test.equal 897897, @game.zobrist_b
     test.equal 354523, @game.zobrist_a
+    test.equal 897897, @game.zobrist_b
+    test.equal 453453, @game.zobrist_c
     test.done()
 
   game_current_player_is_restored: (test) ->

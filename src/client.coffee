@@ -10,13 +10,18 @@ module.exports = class Client
   constructor: (@n) ->
     @parser = new MoveParser(@n)
     @game = new Game(@n)
-    @won = 0
-    @lost = 0
+    @first_move = true
 
   play_game: () ->
-    console.log "Thinking ..."
-    @game.iterative_deepening(7)
-    my_move = @game.current_iteration_best_move
+    my_move = null
+    if @first_move
+      my_move = {side: 'left', ndx: Math.floor(Math.random()* @n) }
+      console.log "making the first move"
+      @first_move = false
+    else
+      console.log "Thinking ..."
+      @game.iterative_deepening(5)
+      my_move = @game.current_iteration_best_move
     console.log "selected move '#{@parser.move_to_string(my_move)}'"
     @game.move my_move.side, my_move.ndx
     console.log @game.print_board()
@@ -49,6 +54,7 @@ module.exports = class Client
       console.log "Game over"
       @game = new Game(@n)
       if body.match(/your turn/)
+        @first_move = true
         console.log "My turn"
       else
         move = @parser.string_to_move(body)
