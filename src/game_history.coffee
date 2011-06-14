@@ -9,9 +9,11 @@ module.exports = class GameHistory
     @loop_encountered = false
 
   push_current_board: () ->
-    @loop_encountered = @visited[@game.zobrist_a] == @game.zobrist_b
-    @visited[@game.zobrist_a] =  @game.zobrist_b
+    key = [ @game.zobrist_b, @game.zobrist_a].join('_')
+    @loop_encountered = (@visited[key] is true)
+    @visited[key] =  true
 
   pop: () ->
+    key = [ @game.zobrist_b, @game.zobrist_a].join('_')
+    delete @visited[key] if !@loop_encountered
     @loop_encountered = false
-    @visited[@game.zobrist_a] = null

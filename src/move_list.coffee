@@ -23,6 +23,7 @@ module.exports = class MoveList
     m = []
     if tt_hint? and tt_hint.best_move?
       m.push(tt_hint.best_move)
+    #todo best move is searched twice
     m.concat(@list)
 
   print_list: () ->

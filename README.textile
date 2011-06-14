@@ -1,0 +1,77 @@
+h1. What is this?
+
+Pousse is a french game similar to tic-tac-toe, except ofcourse unlike it's simpler cousin it is not trivial. The game is played on an N byN board, here is one for 5 by 5 variant:
+
+pre. .....
+.....
+.....
+.....
+.....
+
+
+Two players move consecutively X and O by pushing one piece in from one of the four sides. There are 4xN possible moves at every step, here is how the board looks after the first "top 0" move:
+
+pre. X....
+.....
+.....
+.....
+.....
+
+Each inserted piece pushes older pieces aside in the inserting direction. Here is what happens after a "left 0" move:
+
+pre. OX...
+.....
+.....
+.....
+.....
+
+Empty squares absorb the push, for example after "right 0" move:
+
+pre. OX..X
+.....
+.....
+.....
+.....
+
+If there are no empty squares on the insertion column/row the piece at the opposing side will fall off the board. 
+
+The game ends when one player accumulates more full lines of length N than the other, or when a board position repeats itself. Draw is not possible only Win or Loss. For example this game was won by X
+
+pre. XOO..
+XO.O.
+XXOOO
+XOXXO
+XX..X
+
+
+h1. Playing
+
+For now use 
+
+pre. $cake play
+
+and enter moves on an interactive prompt. 
+
+h1. To develop
+
+First install nodeunit via
+
+pre. $npm install nodeunit
+
+then run the tests via 
+
+pre. $cake test
+
+To test if your change improved the AI strength spawn a server with the new changes and play it against a client of a base checkout.
+
+pre. $cake server
+
+pre. $cake client
+
+Unless you hit some bugs, 1000 games tournament with swapping first mover will be played against the old version. Any AI improvments should be visible.
+
+
+
+
+Copyright (C) 2011 by Dee Zsombor <zsombor@primalgrasp.com>
+

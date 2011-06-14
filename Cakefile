@@ -32,3 +32,15 @@ task "play", "Play the game", ->
     Game = require 'game'
     g = new Game(5)
     g.play()
+
+task "server", "Server for testing game improvements", ->
+  build ->
+    Server = require 'server'
+    s = new Server(5)
+    s.play_game()
+
+task "client", "Client for testing game improvements", ->
+  build ->
+    Client = require 'client'
+    c = new Client(5)
+    c.play_game()

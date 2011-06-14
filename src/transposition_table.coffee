@@ -11,7 +11,7 @@ module.exports = class TranspositionTable
       @table[i] = new TranspositionTableEntry(square.empty, 0, 0, 0, 0, 0, 0)
       i += 1
     @xor_table_a = new Array(@game.nn * 3 + 3)
-    @xor_table_b = new Array(@game.nn * 3 + 2)
+    @xor_table_b = new Array(@game.nn * 3 + 3)
     i = 0
     max_positive_integer = 256*256*256*64
     while i < @game.nn * 3 + 3
@@ -48,13 +48,13 @@ module.exports = class TranspositionTable
     @game.zobrist_b ^= @xor_table_b[pos + (@game.table[pos] + 1)] ^ @xor_table_b[pos + (changed_to + 1)]
 
   update_zobrist_stamp_for_current_player_change: () ->
-    @game.zobrist_a ^= @xor_table_a[@game.n + 2 + @game.current_player] ^ @xor_table_a[@game.n + 2 - @game.current_player]
-    @game.zobrist_b ^= @xor_table_b[@game.n + 2 + @game.current_player] ^ @xor_table_b[@game.n + 2 - @game.current_player]
+    # @game.zobrist_a ^= @xor_table_a[@game.nn*3 + 2 + @game.current_player] ^ @xor_table_a[@game.nn*3 + 2 - @game.current_player]
+    # @game.zobrist_b ^= @xor_table_b[@game.nn*3 + 2 + @game.current_player] ^ @xor_table_b[@game.nn*3 + 2 - @game.current_player]
 
 
   reset_zobrist_stamp_for_game: () ->
-    @game.zobrist_a = @xor_table_a[@game.n + 2 + @game.current_player]
-    @game.zobrist_b = @xor_table_b[@game.n + 2 + @game.current_player]
+    @game.zobrist_a = 0#@xor_table_a[@game.nn*3 + 2 + @game.current_player]
+    @game.zobrist_b = 0#@xor_table_b[@game.nn*3 + 2 + @game.current_player]
     i = 0
     while i < @game.nn
       @game.zobrist_a ^=  @xor_table_a[ i + (@game.table[i] + 1) ]

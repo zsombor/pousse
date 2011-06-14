@@ -1,0 +1,21 @@
+{
+  "author": "Dee Zsombor <zsombor@primalgrasp.com> (http://primalgrasp.com)",
+  "name": "pousse",
+  "description": "A fun little board game.",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/zsombor/pousse.git"
+  },
+  "scripts": {
+    "test": "cake test"
+  },
+  "engines": {
+    "node": ">=v0.4.8"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "nodeunit": ">= 0.5.1"
+  }
+}

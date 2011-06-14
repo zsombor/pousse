@@ -3,6 +3,7 @@ Evaluator = require 'evaluator'
 Undo = require 'undo'
 MoveList = require 'move_list'
 GameHistory = require 'game_history'
+MoveParser = require 'move_parser'
 {square} = require 'square'
 {square_sides} = require 'square'
 {max_value} = require 'square'
@@ -32,7 +33,6 @@ module.exports = class Game
 
   alpha_beta: (alpha, beta, depth) ->
     @nr_processed_nodes += 1
-    # this.log_alpha_beta(alpha, beta, depth)
     if @evaluator.is_game_over() or depth == 0
       value = @evaluator.evaluate()
       return value
@@ -49,6 +49,7 @@ module.exports = class Game
     value = -max_value * @current_player
     best_move = null
     for move in @moves.moves(from_transposition_table)
+      best_move ?= move
       @undo.mark()
       max_player = @current_player > 0
       this.move(move.side, move.ndx)
@@ -78,7 +79,7 @@ module.exports = class Game
                    positional_value.upper_bound
     @transposition_table.store(depth: depth, position_value: value, position_value_type: value_type, best_move: best_move)
     if depth == @current_iteration_depth
-      console.log "'#{best_move.side} #{best_move.ndx}' seems most promissing at depth #{depth} after processed #{@nr_processed_nodes} nodes with #{@transposition_table_hits} tt hits"
+      #console.log "'#{best_move.side} #{best_move.ndx}' seems most promissing at depth #{depth} after processed #{@nr_processed_nodes} nodes with #{@transposition_table_hits} tt hits"
       @current_iteration_best_move = best_move
     null
 
@@ -89,7 +90,7 @@ module.exports = class Game
       @nr_processed_nodes = 0
       @transposition_table_hits = 0
       value = this.alpha_beta(-max_value, max_value, @current_iteration_depth)
-      console.log "game value is #{value}"
+      #console.log "game value is #{value}"
       break if Math.abs(value)is max_value
       @current_iteration_depth += 1
     @current_iteration_best_move
@@ -106,30 +107,19 @@ module.exports = class Game
   play: () ->
     console.log this.print_board()
     handle_input = (chunk) =>
-      match = chunk.match(/(left|right|top|bottom)\s*(\d+)/)
-      if match
-        ndx = parseInt(match[2])
-        if ndx >= 0 and ndx < @n
-          this.move(square_sides[match[1]], ndx)
-          console.log this.print_board()
-          console.log "\n"
-          @evaluator.evaluate()
-          if @evaluator.is_game_over()
-            console.log "Game over!"
-            process.exit(0)
-          console.log "Thinking ..."
-          this.iterative_deepening(9)
-          this.move(@current_iteration_best_move.side, @current_iteration_best_move.ndx)
-          console.log this.print_board()
-          console.log "\n"
-          @evaluator.evaluate()
-          if @evaluator.is_game_over()
-            console.log "Game over!"
-            console.log @evaluator.print_balances()
-            console.log @history.loop_encountered
-            process.exit(0)
-        else
-          console.log "That is not even on the board."
+      @parser = new MoveParser(@n)
+      move = @parser.string_to_move(chunk)
+      if move
+        this.move(move.side, move.ndx)
+        console.log this.print_board()
+        console.log "\n"
+        this.handle_game_over()
+        console.log "Thinking ..."
+        this.iterative_deepening(9)
+        this.move(@current_iteration_best_move.side, @current_iteration_best_move.ndx)
+        console.log this.print_board()
+        console.log "\n"
+        this.handle_game_over()
       else
         if chunk.match(/help|\?/)
           console.log "Moves have a `direction ndx` format, where `direction` must be top/bottom/right/left and ndx is between 0 and #{@n-1}. You will loose if your move leads to a board configuration that was already encountered. There are no cycles or draws."
@@ -143,6 +133,15 @@ module.exports = class Game
     this.readline().setPrompt(prompt, prompt.length)
     this.readline().on('line', handle_input)
     this.readline().prompt()
+
+  handle_game_over: () ->
+    @evaluator.evaluate()
+    if @evaluator.is_game_over()
+      if @history.loop_encountered
+        console.log "loop encountered"
+      console.log "Game over!"
+      console.log "#{if @evaluator.winning_player is square.black then 'X' else 'O' } won"
+      process.exit(0)
 
   change_square: (pos, to) ->
     @transposition_table.update_zobrist_stamp_for_square_change(pos, to)

@@ -10,7 +10,7 @@ module.exports = class Evaluator
     @manhattan_balance = 0
     @balance2value = new Array(@game.n)
     @manhattan_distances = new Array(@game.nn)
-    @two_on_power_of_n_plus_two = Math.pow(2, @game.n + 2)
+    @two_on_power_of_n_plus_two = Math.pow(2, @game.n + 3)
     i = 0
     while i < @game.n
       @piece_balance_per_row[i] = 0
