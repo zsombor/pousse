@@ -1,6 +1,8 @@
 h1. What is this?
 
-Pousse is a french game similar to tic-tac-toe, except ofcourse unlike it's simpler cousin it is not trivial. The game is played on an N byN board, here is one for 5 by 5 variant:
+Pousse is a French game similar to tic-tac-toe.  However unlike it's simpleton 
+cousin this game is anything but trivial. Pousse is played on an N by N board. 
+For example the board for the 5 by 5 variant:
 
 pre. .....
 .....
@@ -9,7 +11,13 @@ pre. .....
 .....
 
 
-Two players move consecutively X and O by pushing one piece in from one of the four sides. There are 4xN possible moves at every step, here is how the board looks after the first "top 0" move:
+The two opposing players (X and O) push their pieces from one of the four sides. 
+On an N by N board there are 4 x N possible moves at every step.  Moves can be 
+represented by descriptions such as "right 0". Latter means push an element 
+from the right on the 0th row. Or "bottom 3" that pushes from the bottom on 
+the column number 3. Because I'm a geek columns / rows are numbered from 0.
+
+This is how the starting table looks after X making a "top 0" move:
 
 pre. X....
 .....
@@ -17,7 +25,10 @@ pre. X....
 .....
 .....
 
-Each inserted piece pushes older pieces aside in the inserting direction. Here is what happens after a "left 0" move:
+Inserted pieces forcefully push other pieces along in their direction of movement. 
+Probably why the game is called _pousse_ in French. Blank positions, represented 
+with dots, are nothing more than a canvas for other pieces to cross. Here is what 
+happens after the opponent replies with a "left 0" move:
 
 pre. OX...
 .....
@@ -25,7 +36,8 @@ pre. OX...
 .....
 .....
 
-Empty squares absorb the push, for example after "right 0" move:
+A simple example on how blank squares absorb the push, is when X replies back 
+with "right 0" move:
 
 pre. OX..X
 .....
@@ -33,9 +45,15 @@ pre. OX..X
 .....
 .....
 
-If there are no empty squares on the insertion column/row the piece at the opposing side will fall off the board. 
+If a piece sits on the edge of the board, it is may be pushed off during a move. 
+When this happens the piece in effect fall off the board.
 
-The game ends when one player accumulates more full lines of length N than the other, or when a board position repeats itself. Draw is not possible only Win or Loss. For example this game was won by X
+The object of the game is to create a full line / column of pieces of your own type.
+Whomever achieves this first wins. Another way of winning is forcing the opponent 
+to repeat a previously encountered board position. Draw is not possible, someone
+will always win. 
+
+For example the next game was won by X:
 
 pre. XOO..
 XO.O.
@@ -44,15 +62,16 @@ XOXXO
 XX..X
 
 
-h1. Playing
+
+h1. Interactive Play
 
 For now use 
 
 pre. $cake play
 
-and enter moves on an interactive prompt. 
+and enter moves on an command line prompt.  
 
-h1. To develop
+h1. Developing
 
 First install nodeunit via
 
@@ -62,15 +81,18 @@ then run the tests via
 
 pre. $cake test
 
-To test if your change improved the AI strength spawn a server with the new changes and play it against a client of a base checkout.
+In addition after making a change you should test if the AI strength 
+had improved or not. Do this by spawninga server with the 
+new changes and play it against a client on a clean base checkout.
 
 pre. $cake server
 
 pre. $cake client
 
-Unless you hit some bugs, 1000 games tournament with swapping first mover will be played against the old version. Any AI improvments should be visible.
-
-
+Unless you introduced some bugs, these two will automatically play a tournament 
+of 1000 games where the right of first move is toggled back and forth. Most board 
+games give an advantage to the first mover hence the need for toggling. Any AI 
+improvments should be visible by the server dominating the client.
 
 
 Copyright (C) 2011 by Dee Zsombor <zsombor@primalgrasp.com>
